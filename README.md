@@ -5,3 +5,9 @@
 ### 2.Moderate Demented
 ### 3.Non Demented
 ### 4.Very Mild Demented
+
+## Lables:
+###   MildDemented->0
+###   ModerateDemented->1
+###   NonDemented->2
+###   VeryMildDemented->3
