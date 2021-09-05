@@ -6,6 +6,7 @@ import numpy as np
 from torch.utils.data import random_split
 import torch
 
+
 #test paths
 test_Mild='Alzheimers Dataset\\test\\MildDemented\\'
 test_Moderate='Alzheimers Dataset\\test\\ModerateDemented\\'

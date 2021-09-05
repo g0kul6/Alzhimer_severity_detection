@@ -1,5 +1,7 @@
 import torch
 import torch.nn as nn
+import torch.optim as optim
+from hyperparameter import lr,device
 
 #block which is repeated in resnet-18 and resnet-34
 class block_18_34(nn.Module):
@@ -33,6 +35,7 @@ class block_18_34(nn.Module):
 class resnet(nn.Module):
     def __init__(self,block,layers,img_channels,num_classes):
         super().__init__()
+        self.in_channels=64
         self.conv1=nn.Conv2d(img_channels,64,kernel_size=7,stride=1,padding=3,bias=False)
         self.bn1=nn.BatchNorm2d(64)
         self.relu=nn.ReLU()
@@ -58,3 +61,32 @@ class resnet(nn.Module):
         for i in range(num_residual_blocks - 1):
             layers.append(block(self.in_channels, out_channels))
         return nn.Sequential(*layers)
+    
+    def forward(self,x):
+        #starting 7x7,maxpool layers
+        x=self.conv1(x)
+        x=self.bn1(x)
+        x=self.relu(x)
+
+        #residual blocks
+        x=self.layer_1(x)
+        x=self.layer_2(x)
+        x=self.layer_3(x)
+        x=self.layer_4(x)
+
+        #avgpool and fully_connected
+        x=self.avgpool(x)
+        x=self.fc(x)
+
+        return x
+
+#resnet-18 and resnet-34
+model_18=resnet(block_18_34,[2,2,2,2],2,4).to(device)
+model_34=resnet(block_18_34,[3,4,6,3],2,4).to(device)
+model_18.train()
+model_34.train()
+#adam optimizers
+optimizer_18=optim.Adam(params=model_18.parameters(),lr=lr)
+optimizer_34=optim.Adam(params=model_34.parameters(),lr=lr)
+#cross entropy loss
+loss=nn.CrossEntropyLoss()

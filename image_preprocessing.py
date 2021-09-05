@@ -1,20 +1,21 @@
 import numpy as np
 from torchvision import transforms
 from torch.utils.data import DataLoader,Dataset
-from PIL import Image
+from PIL import Image,ImageOps
 from hyperparameter import batch_size
+import cv2
 
 #tranformations to train images
 train_transforms=transforms.Compose([transforms.Resize((224,224)),
-                                    transforms.RandomHorizontalFlip(),
+                                    
                                     transforms.ToTensor()])
 #transformation to val images
 val_transforms=transforms.Compose([transforms.Resize((224, 224)),
-                                  transforms.RandomHorizontalFlip(),
+                                  
                                   transforms.ToTensor()])
 #transformation to test imagese
 test_transforms=transforms.Compose([transforms.Resize((224, 224)),
-                                   transforms.RandomHorizontalFlip(),
+                                   
                                    transforms.ToTensor()])   
 
 class dataset(Dataset):
@@ -27,6 +28,7 @@ class dataset(Dataset):
   def __getitem__(self,idx):
     img_path=self.file_list[idx]
     img=Image.open(img_path)
+    img=ImageOps.grayscale(img)
     img_transformed=self.transform(img)
     #get the lable 
     lable=img_path.split('\\')[2]
@@ -46,10 +48,12 @@ train_list=np.load('train_list.npy')
 test_list=np.load('test_list.npy')
 val_list=np.load('val_list.npy')
 
+
 #creating the data with lables
 train_data=dataset(train_list,transform=train_transforms)
 val_data=dataset(val_list,transform=val_transforms)
 test_data=dataset(test_list,transform=test_transforms)
+
 
 #creating data loader for train val and test
 train_loader=DataLoader(dataset = train_data,batch_size=batch_size,shuffle=True)
