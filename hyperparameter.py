@@ -1,6 +1,7 @@
 import torch
 #batch_size
-batch_size = 32
+batch_size = 64
+
 #learning rate
 lr=0.001
 #device

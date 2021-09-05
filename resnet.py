@@ -16,7 +16,7 @@ class block_18_34(nn.Module):
         self.identity_downsample=identity_downsample
         self.stride=stride
     def forward(self,x):
-        identity=x
+        identity=x.clone()
 
         x=self.conv1(x)
         x=self.bn1(x)
@@ -81,12 +81,12 @@ class resnet(nn.Module):
         return x
 
 #resnet-18 and resnet-34
-model_18=resnet(block_18_34,[2,2,2,2],2,4).to(device)
-model_34=resnet(block_18_34,[3,4,6,3],2,4).to(device)
+model_18=resnet(block_18_34,[2,2,2,2],1,4).to(device)
+#model_34=resnet(block_18_34,[3,4,6,3],1,4).to(device)
 model_18.train()
-model_34.train()
+#model_34.train()
 #adam optimizers
 optimizer_18=optim.Adam(params=model_18.parameters(),lr=lr)
-optimizer_34=optim.Adam(params=model_34.parameters(),lr=lr)
+#optimizer_34=optim.Adam(params=model_34.parameters(),lr=lr)
 #cross entropy loss
 loss=nn.CrossEntropyLoss()
