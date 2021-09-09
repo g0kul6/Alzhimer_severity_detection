@@ -1,92 +1,98 @@
 import torch
+
 import torch.nn as nn
 import torch.optim as optim
-from hyperparameter import lr,device
 
-#block which is repeated in resnet-18 and resnet-34
-class block_18_34(nn.Module):
-    def __init__(self,in_channels,out_channels,identity_downsample=None,stride=1):
-        super(block_18_34,self).__init__()
-        self.expansion=4
-        self.conv1=nn.Conv2d(in_channels,out_channels,kernel_size=3,stride=stride,padding=0,bias=False)
-        self.bn1=nn.BatchNorm2d(out_channels)
-        self.conv2=nn.Conv2d(out_channels,out_channels,kernel_size=3,stride=1,padding=1,bias=False)
-        self.bn2=nn.BatchNorm2d(out_channels)
-        self.relu=nn.ReLU()
-        self.identity_downsample=identity_downsample
-        self.stride=stride
-    def forward(self,x):
-        identity=x.clone()
+class BasicBlock(nn.Module):
+    expansion = 1
 
-        x=self.conv1(x)
-        x=self.bn1(x)
-        x=self.relu(x)
-        x=self.conv2(x)
-        x=self.bn2(x)
-        
-        if self.identity_downsample is not None:
-            identity=self.identity_downsample(identity)
-        
-        x+=identity
-        x=self.relu(x)
-        return x
-
-#resnet class
-class resnet(nn.Module):
-    def __init__(self,block,layers,img_channels,num_classes):
+    def __init__(self, inplanes, planes, stride=1, downsample=None):
         super().__init__()
-        self.in_channels=64
-        self.conv1=nn.Conv2d(img_channels,64,kernel_size=7,stride=1,padding=3,bias=False)
-        self.bn1=nn.BatchNorm2d(64)
-        self.relu=nn.ReLU()
-        self.maxpool=nn.MaxPool2d(kernel_size=3,stride=2,padding=1)
+        self.conv1 = nn.Conv2d(inplanes, planes, kernel_size=3, stride=stride,
+                     padding=1, bias=False)
+        self.bn1 = nn.BatchNorm2d(planes)
+        self.relu = nn.ReLU(inplace=True)
+        self.conv2 = nn.Conv2d(planes, planes, kernel_size=3, stride=1,
+                     padding=1, bias=False)
+        self.bn2 = nn.BatchNorm2d(planes)
+        self.downsample = downsample
+        self.stride = stride
+    def forward(self, x):
 
-        #resnet layers
-        self.layer_1=self.layer_n(block,layers[0],64,stride=1)
-        self.layer_2=self.layer_n(block,layers[1],128,stride=2)
-        self.layer_3=self.layer_n(block,layers[2],256,stride=2)
-        self.layer_4=self.layer_n(block,layers[3],512,stride=2)
+        identity = x
+
+        out = self.conv1(x)
+        out = self.bn1(out)
+        out = self.relu(out)
+
+        out = self.conv2(out)
+        out = self.bn2(out)
+
+        if self.downsample is not None:
+            identity = self.downsample(x)
+
+        out += identity
+        out = self.relu(out)
+
+        return out
+
+class ResNet(nn.Module):
+
+    def __init__(self, block, layers, num_classes=4):
+        super().__init__()
         
+        self.inplanes = 64
+
+        self.conv1 = nn.Conv2d(1, self.inplanes, kernel_size=7, stride=2, padding=3,
+                               bias=False)
+        self.bn1 = nn.BatchNorm2d(self.inplanes)
+        self.relu = nn.ReLU(inplace=True)
+        self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
+        
+        self.layer1 = self._make_layer(block, 64, layers[0])
+        self.layer2 = self._make_layer(block, 128, layers[1], stride=2)
+        self.layer3 = self._make_layer(block, 256, layers[2], stride=2)
+        self.layer4 = self._make_layer(block, 512, layers[3], stride=2)
 
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
-        self.fc = nn.Linear(512,num_classes)
-    
-    def layer_n(self,block,num_residual_blocks,out_channels,stride):
-        layers=[]
-        identity_downsample=nn.Sequential(nn.Conv2d(self.in_channels,out_channels,kernel_size=1,stride=stride),
-                                          nn.BatchNorm2d(out_channels))
-        layers.append(block(self.in_channels,out_channels,identity_downsample,stride))
+        self.fc = nn.Linear(512 , num_classes)
+
+    def _make_layer(self, block, planes, blocks, stride=1):
+        downsample = None  
+   
+        if stride != 1 or self.inplanes != planes:
+            downsample = nn.Sequential(
+                nn.Conv2d(self.inplanes, planes, 1, stride, bias=False),
+                nn.BatchNorm2d(planes),
+            )
+
+        layers = []
+        layers.append(block(self.inplanes, planes, stride, downsample))
         
-        #rest of residual layers not required with downsample already mapped to required dimension
-        for i in range(num_residual_blocks - 1):
-            layers.append(block(self.in_channels, out_channels))
+        self.inplanes = planes
+        for _ in range(1, blocks):
+            layers.append(block(self.inplanes, planes))
+
         return nn.Sequential(*layers)
     
-    def forward(self,x):
-        #starting 7x7,maxpool layers
-        x=self.conv1(x)
-        x=self.bn1(x)
-        x=self.relu(x)
+    def forward(self, x):
+        x = self.conv1(x)           # 224x224
+        x = self.bn1(x)
+        x = self.relu(x)
+        x = self.maxpool(x)         # 112x112
 
-        #residual blocks
-        x=self.layer_1(x)
-        x=self.layer_2(x)
-        x=self.layer_3(x)
-        x=self.layer_4(x)
+        x = self.layer1(x)          # 56x56
+        x = self.layer2(x)          # 28x28
+        x = self.layer3(x)          # 14x14
+        x = self.layer4(x)          # 7x7
 
-        #avgpool and fully_connected
-        x=self.avgpool(x)
-        x=self.fc(x)
+        x = self.avgpool(x)         # 1x1
+        x = torch.flatten(x, 1)     # remove 1 X 1 grid and make vector of tensor shape 
+        x = self.fc(x)
 
         return x
 
-#resnet-18 and resnet-34
-model_18=resnet(block_18_34,[2,2,2,2],1,4).to(device)
-#model_34=resnet(block_18_34,[3,4,6,3],1,4).to(device)
+model_18=ResNet(BasicBlock,[2,2,2,2]).cuda()
 model_18.train()
-#model_34.train()
-#adam optimizers
-optimizer_18=optim.Adam(params=model_18.parameters(),lr=lr)
-#optimizer_34=optim.Adam(params=model_34.parameters(),lr=lr)
-#cross entropy loss
-loss=nn.CrossEntropyLoss()
+optimizer_18=optim.Adam(params=model_18.parameters(),lr=0.001)
+lo=nn.CrossEntropyLoss()

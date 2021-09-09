@@ -28,7 +28,7 @@ class dataset(Dataset):
   def __getitem__(self,idx):
     img_path=self.file_list[idx]
     img=Image.open(img_path)
-    img=ImageOps.grayscale(img)
+    
     img_transformed=self.transform(img)
     #get the lable 
     lable=img_path.split('\\')[2]
