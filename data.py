@@ -8,16 +8,16 @@ import torch
 
 
 #test paths
-test_Mild='Alzheimers Dataset\\test\\MildDemented\\'
-test_Moderate='Alzheimers Dataset\\test\\ModerateDemented\\'
-test_Non='Alzheimers Dataset\\test\\NonDemented\\'
-test_VeryMild='Alzheimers Dataset\\test\\VeryMildDemented\\'
+test_Mild='Alzheimers Dataset/test/MildDemented/'
+test_Moderate='Alzheimers Dataset/test/ModerateDemented/'
+test_Non='Alzheimers Dataset/test/NonDemented/'
+test_VeryMild='Alzheimers Dataset/test/VeryMildDemented/'
 
 #train_paths
-train_Mild='Alzheimers Dataset\\train\\MildDemented\\'
-train_Moderate='Alzheimers Dataset\\train\\ModerateDemented\\'
-train_Non='Alzheimers Dataset\\train\\NonDemented\\'
-train_VeryMild='Alzheimers Dataset\\train\\VeryMildDemented\\'
+train_Mild='Alzheimers Dataset/train/MildDemented/'
+train_Moderate='Alzheimers Dataset/train/ModerateDemented/'
+train_Non='Alzheimers Dataset/train/NonDemented/'
+train_VeryMild='Alzheimers Dataset/train/VeryMildDemented/'
 
 #list to train imgs path
 train_Mild_list = glob.glob(os.path.join(train_Mild,'*.jpg'))

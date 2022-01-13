@@ -52,23 +52,5 @@ for epoch in range(epochs):
         acc2.append(epoch_val_accuracy.item())
         loss2.append(epoch_val_loss.item())    
         print('Epoch : {}, val_accuracy : {}, val_loss : {}'.format(epoch+1, epoch_val_accuracy,epoch_val_loss))
-np.save('loss1.npy', loss1)
-np.save('loss2.npy', loss2)
-np.save('acc1.npy', acc1)
-np.save('acc2.npy', acc2)
 
-y1=np.load('loss1.npy')
-y2=np.load('loss2.npy')
-y3=np.load('acc1.npy')
-y4=np.load('acc2.npy')
-
-x=range(epochs)
-plt.plot(x,y1,color='blue')
-plt.plot(x,y2,color='orange')
-
-plt.show()
-
-plt.plot(x,y3,color='blue')
-plt.plot(x,y4,color='orange')
-
-plt.show()
+torch.save(model_18.state_dict(),"trained_model_pth/iter_100.pth")

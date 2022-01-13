@@ -31,7 +31,7 @@ class dataset(Dataset):
     
     img_transformed=self.transform(img)
     #get the lable 
-    lable=img_path.split('\\')[2]
+    lable=img_path.split('/')[2]
     #one-hot encoding the lable
     if lable=='MildDemented':
         lable=0

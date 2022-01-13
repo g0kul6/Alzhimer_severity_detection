@@ -11,3 +11,8 @@
 ###   ModerateDemented->1
 ###   NonDemented->2
 ###   VeryMildDemented->3
+
+## Results:
+###   Loss vs Epoch:
+###   Accuracy vs Epoch:
+
