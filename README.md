@@ -19,3 +19,6 @@
 
 ###   Accuracy vs Epoch:
 
+<img align='center' src='Plots/accuracy/accuracy.png' width='600"'>
+
+
