@@ -14,5 +14,8 @@
 
 ## Results:
 ###   Loss vs Epoch:
+
+<img align='center' src='Plots/loss/loss.png' width='600"'>
+
 ###   Accuracy vs Epoch:
 
