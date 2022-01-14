@@ -54,3 +54,7 @@ for epoch in range(epochs):
         print('Epoch : {}, val_accuracy : {}, val_loss : {}'.format(epoch+1, epoch_val_accuracy,epoch_val_loss))
 
 torch.save(model_18.state_dict(),"trained_model_pth/iter_100.pth")
+np.save("Plots/loss/loss_train",loss1)
+np.save("Plots/loss/loss_val",loss2)
+np.save("Plots/accuracy/accuracy_train",acc1)
+np.save("Plots/accuracy/accuracy_val",acc2)

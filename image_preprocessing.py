@@ -7,15 +7,18 @@ import cv2
 
 #tranformations to train images
 train_transforms=transforms.Compose([transforms.Resize((224,224)),
-                                    
+                                    transforms.RandomResizedCrop(224),
+                                    transforms.RandomHorizontalFlip(),
                                     transforms.ToTensor()])
 #transformation to val images
 val_transforms=transforms.Compose([transforms.Resize((224, 224)),
-                                  
+                                  transforms.RandomResizedCrop(224),
+                                    transforms.RandomHorizontalFlip(),
                                   transforms.ToTensor()])
 #transformation to test imagese
 test_transforms=transforms.Compose([transforms.Resize((224, 224)),
-                                   
+                                   transforms.RandomResizedCrop(224),
+                                    transforms.RandomHorizontalFlip(),
                                    transforms.ToTensor()])   
 
 class dataset(Dataset):
@@ -44,9 +47,9 @@ class dataset(Dataset):
     return img_transformed,lable
 
 #loading the train,test and val lists
-train_list=np.load('train_list.npy')
-test_list=np.load('test_list.npy')
-val_list=np.load('val_list.npy')
+train_list=np.load('Data_List/train_list.npy')
+test_list=np.load('Data_List/test_list.npy')
+val_list=np.load('Data_List/val_list.npy')
 
 
 #creating the data with lables

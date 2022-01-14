@@ -46,8 +46,8 @@ train_len=l-val_len
 train_list,val_list=random_split(train_list,[train_len,val_len],generator=torch.Generator().manual_seed(42))
 
 #saving the train,val and test list of paths
-np.save('train_list',train_list)
-np.save('val_list',val_list)
-np.save('test_list',test_list)
+np.save('Data_List/train_list',train_list)
+np.save('Data_List/val_list',val_list)
+np.save('Data_List/test_list',test_list)
 
 

@@ -94,5 +94,5 @@ class ResNet(nn.Module):
 
 model_18=ResNet(BasicBlock,[2,2,2,2]).cuda()
 model_18.train()
-optimizer_18=optim.Adam(params=model_18.parameters(),lr=0.001)
+optimizer_18=optim.RMSprop(params=model_18.parameters(),lr=0.001)
 lo=nn.CrossEntropyLoss()
