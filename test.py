@@ -1,10 +1,12 @@
+from email.mime import image
 import torch
 from resnet import model_18,lo
 from image_preprocessing import val_loader,test_loader
 import torch 
 from hyperparameter import epochs,device
-import cv2
+import matplotlib.pyplot as plt
 import numpy as np
+from sklearn.metrics import confusion_matrix
 model=model_18.cuda()
 model.load_state_dict(torch.load("trained_model_pth/iter_100.pth"))
 model.eval()
@@ -17,10 +19,31 @@ with torch.no_grad():
             
             label = label.to(device)
             
-            val_output = model(data)
-            val_loss = lo(val_output,label)
+            output = model(data)
+            loss = lo(output,label)
             
             
-            acc = ((val_output.argmax(dim=1) == label).float().mean())
+            acc = ((output.argmax(dim=1) == label).float().mean())
             epoch_val_accuracy += acc/ len(test_loader)
-            epoch_val_loss += val_loss/ len(test_loader)
+            epoch_val_loss += loss/ len(test_loader)
+
+y_true=[]
+y_predicted=[]
+for i in range(len(output)):
+    o=torch.argmax(output[i])
+    l=label[i]
+    y_predicted.append(o.item())
+    y_true.append(l.item())
+
+conf_matrix=confusion_matrix(y_true, y_predicted)
+
+fig, ax = plt.subplots(figsize=(7.5, 7.5))
+ax.matshow(conf_matrix, cmap=plt.cm.Blues, alpha=0.3)
+for i in range(conf_matrix.shape[0]):
+    for j in range(conf_matrix.shape[1]):
+        ax.text(x=j, y=i,s=conf_matrix[i, j], va='center', ha='center', size='xx-large')
+ 
+plt.xlabel('Predictions', fontsize=18)
+plt.ylabel('Actuals', fontsize=18)
+plt.title('Confusion Matrix', fontsize=18)
+plt.show()

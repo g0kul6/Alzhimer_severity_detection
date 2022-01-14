@@ -15,4 +15,9 @@
 
 <img align='center' src='Plots/accuracy/accuracy.png' width='600"'>
 
+###   Confusion Matrix:
+
+<img align='center' src='confusion_matrix.png' width='600"'>
+
+
 
