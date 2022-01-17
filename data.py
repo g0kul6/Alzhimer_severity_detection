@@ -34,7 +34,7 @@ test_VeryMild_list= glob.glob(os.path.join(test_VeryMild,'*.jpg'))
 #list of train and test img paths
 train_list=train_Mild_list+train_Moderate_list+train_Non_list+train_VeryMild_list
 test_list=test_Mild_list+test_Moderate_list+test_Non_list+test_VeryMild_list
-
+print(train_list)
 #random shuffle of train_list
 random.shuffle(train_list)
 
@@ -49,5 +49,6 @@ train_list,val_list=random_split(train_list,[train_len,val_len],generator=torch.
 np.save('Data_List/train_list',train_list)
 np.save('Data_List/val_list',val_list)
 np.save('Data_List/test_list',test_list)
+
 
 
