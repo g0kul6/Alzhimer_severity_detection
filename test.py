@@ -7,8 +7,6 @@ from hyperparameter import epochs,device
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.metrics import confusion_matrix
-from sklearn.metrics import roc_curve, auc
-from sklearn.metrics import roc_auc_score
 from sklearn.metrics import f1_score
 
 model=model_18.cuda()
@@ -28,7 +26,7 @@ with torch.no_grad():
             loss = lo(output,label)
             for i in range(len(label)):
                 labels.append(label[i].item())
-                outputs.append(torch.argmax(output[i]).item())
+                outputs.append(torch.max(output[i]).item())
             
             acc = ((output.argmax(dim=1) == label).float().mean())
             epoch_val_accuracy += acc/ len(test_loader)
